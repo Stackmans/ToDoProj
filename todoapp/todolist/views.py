@@ -10,14 +10,13 @@ def index(request):
 
 
 @require_http_methods(['POST'])
-# @csrf_exempt
 def add(request):
-    title = request.POST['title']
-    todo = ToDo(title=title)
-    if todo.title == '':
-        pass
-    else:
-        todo.save()
+    title = request.POST.get('title', '').strip()  # Використовуйте get() та strip() для очищення введення від пробілів
+    if title:  # Перевірте, чи назва не є порожньою після очищення
+        existing_todo = ToDo.objects.filter(title=title).first()
+        if existing_todo is None:
+            todo = ToDo(title=title)
+            todo.save()
     return redirect('index')
 
 
